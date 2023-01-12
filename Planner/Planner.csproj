@@ -7,7 +7,7 @@
     <ProjectGuid>{40507790-AFD1-4E94-86F5-44F051CFF991}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>Planner</RootNamespace>
-    <AssemblyName>Planner</AssemblyName>
+    <AssemblyName>OSRS Bank Planner</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -24,7 +24,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>1</ApplicationRevision>
+    <ApplicationRevision>2</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
