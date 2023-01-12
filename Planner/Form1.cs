@@ -12,6 +12,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Data.SqlClient;
 using System.Configuration;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace Planner
 {
@@ -21,6 +22,8 @@ namespace Planner
         private DataGridViewCell drag_ID;
         private object HoldingID;
         private string CursorID;
+        private string CursorToolTip;
+        private string TempToolTipText;
         public String myPath = System.IO.Path.GetDirectoryName(Application.ExecutablePath) + @"\Images\";
         public Point startPoint;
         public Point startCellPoint;
@@ -63,7 +66,7 @@ namespace Planner
                     break;
             }
             //Filling the 'inventory' this reads from the CSV file and associates with PNG file name
-            var reader = new StreamReader(File.OpenRead(myPath + "ListNameID.csv"));
+            var reader = new StreamReader(File.OpenRead(myPath + "items.csv"));
             var line1 = reader.ReadLine();
             var line2 = reader.ReadLine();
             while (!reader.EndOfStream)
@@ -114,7 +117,7 @@ namespace Planner
                     {
                         dataGridView2.Rows[i].Visible = false;      //Hide those that do not match
                     }
-
+                    e.Handled = true;
                 }
             }
         }
@@ -154,6 +157,7 @@ namespace Planner
                         {
                             dataGridView1.Rows[i].Cells[j - 1].Value = dataGridView2.Rows[k].Cells[0].Value; //add the image to the cell BEFORE (left) of the cell containing "-2"
                             dataGridView1.Rows[i].Cells[j].Value = dataGridView2.Rows[k].Cells[1].Value.ToString(); //add the ID, replacing "-2"
+                            dataGridView1.Rows[i].Cells[j].ToolTipText = dataGridView2.Rows[k].Cells[2].Value.ToString(); //add the name as the tooltip text
                             foundFlag = i = j = dataGridView1.Rows.Count; // stop both "for" loops by forcing a value larger than the number of tiles
                         }
                     }
@@ -332,18 +336,18 @@ namespace Planner
             }
         }
 
-        private void dataGridView1_DragDrop(object sender, DragEventArgs e)     //Observe were a drag begins and ends to determine what items to switch
+        private void dataGridView1_DragDrop(object sender, DragEventArgs e)     //Observe where a drag begins and ends to determine what items to switch
         {
             // The mouse locations are relative to the screen, so they must be converted to client coordinates.
             Point clientPoint = dataGridView1.PointToClient(new Point(e.X, e.Y));
             int currentDistance;
 
-            // Get the row index of the item the mouse is below. 
+            // Get the row index of the item the mouse is above. 
             DataGridView.HitTestInfo hti = dataGridView1.HitTest(clientPoint.X, clientPoint.Y);
             DataGridViewCell targetCell = dataGridView1[hti.ColumnIndex, hti.RowIndex];
             DataGridViewCell targetCellID = dataGridView1[hti.ColumnIndex + 1, hti.RowIndex];
 
-            // If the drag operation was a move then remove and insert the row. First we must define was a move is, we will say at least 25
+            // If the drag operation was a move then remove and insert the row. First we must define what a move is, we will say at least 25
             if (e.Effect == DragDropEffects.Move)
             {
                 currentDistance = ((startPoint.X - clientPoint.X) * (startPoint.X - clientPoint.X) + (startPoint.Y - clientPoint.Y) * (startPoint.Y - clientPoint.Y));
@@ -354,6 +358,7 @@ namespace Planner
                     // the cursor only moved 5 pixels is any direction instead of a move is a delete
                     dataGridView1.Rows[dataGridView1.CurrentCell.RowIndex].Cells[dataGridView1.CurrentCell.ColumnIndex].Value = Image.FromFile(myPath + "-2.png");
                     dataGridView1.Rows[dataGridView1.CurrentCell.RowIndex].Cells[dataGridView1.CurrentCell.ColumnIndex + 1].Value = "-2"; //Set placeholder ID
+                    dataGridView1.Rows[dataGridView1.CurrentCell.RowIndex].Cells[dataGridView1.CurrentCell.ColumnIndex].ToolTipText = ""; // Set ToolTipText to Empty String
 
                 }
                 else
@@ -365,6 +370,10 @@ namespace Planner
                         HoldingID = targetCellID.Value;
                         targetCellID.Value = drag_ID.Value;
                         drag_ID.Value = HoldingID;
+                        TempToolTipText = targetCellID.ToolTipText; // Store the Original ToolTipText
+                        // label3.Text = TempToolTipText;
+                        targetCellID.ToolTipText = drag_ID.ToolTipText; // Set the Destination ToolTipText
+                        drag_ID.ToolTipText = TempToolTipText;
                         targetCell.Value = Image.FromFile(myPath + CursorID + ".png");
                         drag_Image.Value = Image.FromFile(myPath + HoldingID.ToString() + ".png");
                         dataGridView1.Refresh();
@@ -392,9 +401,12 @@ namespace Planner
                                 int x2 = (i + 2) % 16;
                                 int y2 = (i + 2) / 16;
                                 dataGridView1.Rows[y1].Cells[x1].Value = dataGridView1.Rows[y2].Cells[x2].Value;
+                                dataGridView1.Rows[y1].Cells[x1].ToolTipText = dataGridView1.Rows[y2].Cells[x2].ToolTipText;
                                 dataGridView1.Rows[y1].Cells[x1 + 1].Value = dataGridView1.Rows[y2].Cells[x2 + 1].Value;
+                                dataGridView1.Rows[y1].Cells[x1 + 1].ToolTipText = dataGridView1.Rows[y2].Cells[x2 + 1].ToolTipText;
                             }
                             targetCellID.Value = CursorID;
+                            targetCellID.ToolTipText = CursorToolTip;
                             targetCell.Value = Image.FromFile(myPath + CursorID + ".png");
                         }
                         else if (startCell > endCell)
@@ -408,15 +420,19 @@ namespace Planner
                                 int y2 = (i - 2) / 16;
 
                                 dataGridView1.Rows[y1].Cells[x1].Value = dataGridView1.Rows[y2].Cells[x2].Value;
+                                dataGridView1.Rows[y1].Cells[x1].ToolTipText = dataGridView1.Rows[y2].Cells[x2].ToolTipText;
                                 dataGridView1.Rows[y1].Cells[x1 + 1].Value = dataGridView1.Rows[y2].Cells[x2 + 1].Value;
+                                dataGridView1.Rows[y1].Cells[x1 + 1].ToolTipText = dataGridView1.Rows[y2].Cells[x2 + 1].ToolTipText;
                             }
                             targetCellID.Value = CursorID;
+                            targetCellID.ToolTipText = CursorToolTip;
                             targetCell.Value = Image.FromFile(myPath + CursorID + ".png");
                         }
                         else
                         {
                             // If the image is dragged and then returned to the same spot, we restore it
                             targetCellID.Value = CursorID;
+                            targetCellID.ToolTipText = CursorToolTip;
                             targetCell.Value = Image.FromFile(myPath + CursorID + ".png");
                         }
 
@@ -435,6 +451,7 @@ namespace Planner
                 drag_Image = dataGridView1[hti.ColumnIndex, hti.RowIndex];
                 drag_ID = dataGridView1[hti.ColumnIndex + 1, hti.RowIndex];
                 CursorID = drag_ID.Value.ToString();
+                CursorToolTip = drag_ID.ToolTipText;
                 startCellPoint = MousePosition;
                 startPoint.X = e.X;
                 startPoint.Y = e.Y;
@@ -466,6 +483,7 @@ namespace Planner
                 // The mouse button was lifted without dragging so we assume the user wants to delete the item
                 dataGridView1.Rows[dataGridView1.CurrentCell.RowIndex].Cells[dataGridView1.CurrentCell.ColumnIndex].Value = Image.FromFile(myPath + "-2.png");
                 dataGridView1.Rows[dataGridView1.CurrentCell.RowIndex].Cells[dataGridView1.CurrentCell.ColumnIndex + 1].Value = "-2"; //Set placeholder ID
+                dataGridView1.Rows[dataGridView1.CurrentCell.RowIndex].Cells[dataGridView1.CurrentCell.ColumnIndex + 1].ToolTipText = "";
             }
 
         }
@@ -492,6 +510,7 @@ namespace Planner
             saveFileDialog1.InitialDirectory = System.IO.Path.GetDirectoryName(Application.ExecutablePath) + @"\Bank Saves\";
             saveFileDialog1.CheckPathExists = true;
             saveFileDialog1.Filter = "Binary File|*.bin";
+            // saveFileDialog1.Filter = "Text File|*.txt";
             saveFileDialog1.Title = "Save your bank";
             if (saveFileDialog1.ShowDialog() == DialogResult.OK)
             {
@@ -505,8 +524,10 @@ namespace Planner
                         for (int j = 1; j / 2 < 16 / 2; j += 2)
                         {
                             object val = dgvR.Cells[j].Value;
+                            string toolTip = dgvR.Cells[j].ToolTipText;
                             if (val == null)
                             {
+                                bw.Write(false);
                                 bw.Write(false);
                                 bw.Write(false);
                             }
@@ -514,10 +535,35 @@ namespace Planner
                             {
                                 bw.Write(true);
                                 bw.Write(val.ToString());
+                                bw.Write(toolTip);
                             }
                         }
                     }
                 }
+
+                /*using (TextWriter tw = new StreamWriter(File.Open(file, FileMode.Create)))
+                {
+                    foreach (DataGridViewRow dgvR in BankGrid.Rows)
+                    {
+                        for (int j = 1; j / 2 < 16 / 2; j+= 2)
+                        {
+                            object val = dgvR.Cells[j].Value;
+                            string toolTip = dgvR.Cells[j].ToolTipText;
+                            if (val == null)
+                            {
+                                return;
+                            }
+                            else
+                            {
+                                tw.Write(val.ToString());
+                                tw.Write(",");
+                                tw.Write(toolTip);
+                                tw.Write(" | ");
+                            }
+                        }
+                        tw.WriteLine();
+                    }
+                }*/
             }
         }
 
@@ -589,6 +635,8 @@ namespace Planner
                             {
                                 BankGrid.Rows[i].Cells[j].Value = bw.ReadString();
                                 BankGrid.Rows[i].Cells[j - 1].Value = Image.FromFile(myPath + BankGrid.Rows[i].Cells[j].Value.ToString() + ".png");
+                                BankGrid.Rows[i].Cells[j].ToolTipText = bw.ReadString();
+                                BankGrid.Rows[i].Cells[j - 1].ToolTipText = BankGrid.Rows[i].Cells[j].ToolTipText;
                             }
                             else bw.ReadBoolean();
                         }
@@ -678,6 +726,7 @@ namespace Planner
                 {
                     dataGridView1.Rows[i].Cells[j - 1].Value = Image.FromFile(myPath + "-2.png"); //add the image to the cell BEFORE (left) of the cell containing "-2"
                     dataGridView1.Rows[i].Cells[j].Value = "-2"; //add the ID, replacing "-2"
+                    dataGridView1.Rows[i].Cells[j].ToolTipText = ""; // clear the ToolTipText
                 }
             }
         }
@@ -717,6 +766,30 @@ namespace Planner
             //label3.Text = dataGridView2.FirstDisplayedCell.ToString();
             //label4.Text = "customSB.value:" + customScrollbar2.Value.ToString();
             //label5.Text = "dataGridView2.Rows[customScrollbar2.Value].Displayed: " + dataGridView2.Rows[customScrollbar2.Value].Displayed;
+        }
+
+        private void dataGridView1_CellMouseEnter(object sender, DataGridViewCellEventArgs e)
+        {
+            var p = this.dataGridView1.PointToClient(Cursor.Position);
+            var info = this.dataGridView1.HitTest(p.X, p.Y);
+            DataGridViewCell hoveredCellID = dataGridView1[info.ColumnIndex + 1, info.RowIndex];
+            label3.Text = hoveredCellID.Value.ToString();
+            Rectangle cellRect = dataGridView1.GetCellDisplayRectangle(info.ColumnIndex, info.RowIndex, false);
+            toolTip.Show(hoveredCellID.ToolTipText, this, dataGridView1.Location.X + cellRect.X + cellRect.Size.Width, dataGridView1.Location.Y + cellRect.Y + cellRect.Size.Height, 1000);    // Duration: 1 seconds.
+        }
+
+        private void dataGridView1_CellMouseLeave(object sender, DataGridViewCellEventArgs e)
+        {
+            {
+                toolTip.Hide(this);
+            }
+        }
+
+        private void toolTip_Draw(object sender, DrawToolTipEventArgs e)
+        {
+            e.DrawBackground();
+            e.DrawBorder();
+            e.DrawText();
         }
     }
 }
