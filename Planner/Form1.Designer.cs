@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
@@ -93,6 +94,7 @@
             this.customScrollbar1 = new CustomControls.CustomScrollbar();
             this.customScrollbar2 = new CustomControls.CustomScrollbar();
             this.label5 = new System.Windows.Forms.Label();
+            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.SwapBtn)).BeginInit();
@@ -181,8 +183,11 @@
             this.dataGridView1.RowTemplate.ReadOnly = true;
             this.dataGridView1.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.dataGridView1.ScrollBars = System.Windows.Forms.ScrollBars.None;
+            this.dataGridView1.ShowCellToolTips = false;
             this.dataGridView1.Size = new System.Drawing.Size(421, 643);
             this.dataGridView1.TabIndex = 0;
+            this.dataGridView1.CellMouseEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellMouseEnter);
+            this.dataGridView1.CellMouseLeave += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellMouseLeave);
             this.dataGridView1.Scroll += new System.Windows.Forms.ScrollEventHandler(this.dataGridView1_Scroll);
             this.dataGridView1.DragDrop += new System.Windows.Forms.DragEventHandler(this.dataGridView1_DragDrop);
             this.dataGridView1.DragOver += new System.Windows.Forms.DragEventHandler(this.dataGridView1_DragOver);
@@ -334,7 +339,7 @@
             this.dataGridView2.AllowUserToResizeColumns = false;
             this.dataGridView2.AllowUserToResizeRows = false;
             dataGridViewCellStyle5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(31)))), ((int)(((byte)(26)))));
-            dataGridViewCellStyle5.Font = new System.Drawing.Font("RuneScape UF", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle5.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             dataGridViewCellStyle5.ForeColor = System.Drawing.Color.Yellow;
             dataGridViewCellStyle5.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(31)))), ((int)(((byte)(26)))));
             dataGridViewCellStyle5.SelectionForeColor = System.Drawing.Color.Yellow;
@@ -363,7 +368,7 @@
             this.dataGridView2.RowHeadersVisible = false;
             this.dataGridView2.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             dataGridViewCellStyle7.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(31)))), ((int)(((byte)(26)))));
-            dataGridViewCellStyle7.Font = new System.Drawing.Font("RuneScape UF", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle7.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             dataGridViewCellStyle7.ForeColor = System.Drawing.Color.Yellow;
             dataGridViewCellStyle7.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(31)))), ((int)(((byte)(26)))));
             dataGridViewCellStyle7.SelectionForeColor = System.Drawing.Color.Yellow;
@@ -413,7 +418,7 @@
             // 
             this.SwapBtn.Enabled = false;
             this.SwapBtn.Image = ((System.Drawing.Image)(resources.GetObject("SwapBtn.Image")));
-            this.SwapBtn.Location = new System.Drawing.Point(50, 7);
+            this.SwapBtn.Location = new System.Drawing.Point(12, 7);
             this.SwapBtn.Margin = new System.Windows.Forms.Padding(2, 4, 2, 4);
             this.SwapBtn.Name = "SwapBtn";
             this.SwapBtn.Size = new System.Drawing.Size(62, 34);
@@ -540,7 +545,7 @@
             // InsertBtn
             // 
             this.InsertBtn.Image = ((System.Drawing.Image)(resources.GetObject("InsertBtn.Image")));
-            this.InsertBtn.Location = new System.Drawing.Point(119, 7);
+            this.InsertBtn.Location = new System.Drawing.Point(81, 7);
             this.InsertBtn.Margin = new System.Windows.Forms.Padding(2, 4, 2, 4);
             this.InsertBtn.Name = "InsertBtn";
             this.InsertBtn.Size = new System.Drawing.Size(62, 34);
@@ -557,6 +562,7 @@
             this.NewTab.Size = new System.Drawing.Size(34, 34);
             this.NewTab.TabIndex = 17;
             this.NewTab.TabStop = false;
+            this.NewTab.Visible = false;
             this.NewTab.Click += new System.EventHandler(this.NewTab_Click);
             // 
             // Settings
@@ -680,13 +686,13 @@
             // HelpText
             // 
             this.HelpText.AutoSize = true;
-            this.HelpText.Font = new System.Drawing.Font("RuneScape UF", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.HelpText.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.HelpText.ForeColor = System.Drawing.Color.Yellow;
             this.HelpText.Image = ((System.Drawing.Image)(resources.GetObject("HelpText.Image")));
             this.HelpText.Location = new System.Drawing.Point(445, 42);
             this.HelpText.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.HelpText.Name = "HelpText";
-            this.HelpText.Size = new System.Drawing.Size(274, 15);
+            this.HelpText.Size = new System.Drawing.Size(315, 18);
             this.HelpText.TabIndex = 28;
             this.HelpText.Text = "This is the HelpText, it reads from README.txt";
             this.HelpText.Visible = false;
@@ -840,6 +846,16 @@
             this.label5.Text = "label5";
             this.label5.Visible = false;
             // 
+            // toolTip
+            // 
+            this.toolTip.AutoPopDelay = 2000;
+            this.toolTip.BackColor = System.Drawing.Color.Black;
+            this.toolTip.ForeColor = System.Drawing.SystemColors.HighlightText;
+            this.toolTip.InitialDelay = 250;
+            this.toolTip.OwnerDraw = true;
+            this.toolTip.ReshowDelay = 50;
+            this.toolTip.Draw += new System.Windows.Forms.DrawToolTipEventHandler(this.toolTip_Draw);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -886,6 +902,8 @@
             this.Controls.Add(this.pictureBox11);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(2, 4, 2, 4);
+            this.MaximumSize = new System.Drawing.Size(802, 765);
+            this.MinimumSize = new System.Drawing.Size(802, 765);
             this.Name = "Form1";
             this.Text = "OldSchool Runescape Bank Planner by Raikarr";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
@@ -979,6 +997,7 @@
         private CustomControls.CustomScrollbar customScrollbar1;
         private CustomControls.CustomScrollbar customScrollbar2;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.ToolTip toolTip;
     }
 }
 
